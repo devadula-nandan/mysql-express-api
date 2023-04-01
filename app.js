@@ -19,8 +19,16 @@ var posts = require("./routes/posts");
 var app = express();
 
 // cors options
+
+var whitelist = ["http://react-env.eba-g3x3jew2.ap-south-1.elasticbeanstalk.com/","http://localhost:3000"]
 const corsOptions = {
-  origin: ["http://react-env.eba-g3x3jew2.ap-south-1.elasticbeanstalk.com/","http://localhost:3000"],
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [
