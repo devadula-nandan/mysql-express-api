@@ -33,13 +33,13 @@ router.post('/', upload.single('file'), (req, res) => {
 
   // Set up S3 upload parameters
   const folder = req.body.folder || '';
+  console.log(folder);
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: folder ? `${folder}/${file.originalname}` : file.originalname,
     Body: file.buffer,
     ACL: 'public-read'
   };
-  console.log(params)
   // Upload file to S3 bucket
   s3.putObject(params, (err, data) => {
     if (err) {
@@ -47,7 +47,7 @@ router.post('/', upload.single('file'), (req, res) => {
       res.status(500).json({ error: err });
     } else {
       console.log('File uploaded successfully to S3 bucket');
-      const url = data.Location;
+      const url = `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${params.Key}`;
       res.send({ url });
     }
   });
