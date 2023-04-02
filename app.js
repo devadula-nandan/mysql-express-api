@@ -12,6 +12,7 @@ var logger = require("morgan");
 var cors = require("cors");
 
 // route imports
+const uploadRoute = require('./routes/upload');
 var index = require("./routes/index");
 var users = require("./routes/users");
 var posts = require("./routes/posts");
@@ -48,6 +49,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", index);
 
 // mounting routes
+app.use('/upload', uploadRoute);
 app.use("/users", users);
 app.use("/posts", posts);
 
