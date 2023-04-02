@@ -44,7 +44,7 @@ router.post('/', upload.single('file'), (req, res) => {
   s3.putObject(params, (err, data) => {
     if (err) {
       console.error("problem uploading",err);
-      res.status(500).send('Error uploading file to S3 bucket');
+      res.status(500).json({ error: err });
     } else {
       console.log('File uploaded successfully to S3 bucket');
       const url = data.Location;
