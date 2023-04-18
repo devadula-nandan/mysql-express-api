@@ -8,7 +8,7 @@ const db = require("../models");
 
 // create new user
 router.post("/", encrypt, async (req, res, next) => {
-  // Create a new user object
+
   const { username, email, password,avatar } = req.body;
   try {
     const existingUser = await db.User.findOne({ where: { email } });
