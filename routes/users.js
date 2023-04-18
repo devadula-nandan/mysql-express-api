@@ -9,7 +9,7 @@ const db = require("../models");
 // create new user
 router.post("/", encrypt, async (req, res, next) => {
   // Create a new user object
-  const { username, email, password } = req.body;
+  const { username, email, password,avatar } = req.body;
   try {
     const existingUser = await db.User.findOne({ where: { email } });
     if (existingUser) {
@@ -19,6 +19,7 @@ router.post("/", encrypt, async (req, res, next) => {
       email: email,
       password: password,
       username: username,
+      avatar: avatar,
     }); // Generate a JWT token and send it in the response
     const token = generateToken({ email: result.email, id: result.id });
     res.status(201).json({ user: result, token: token });

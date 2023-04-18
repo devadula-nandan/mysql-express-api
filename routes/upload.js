@@ -1,56 +1,37 @@
-// routes/upload.js
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
-const AWS = require('aws-sdk');
+const imagekit = require("../imagekit");
+const router = express.Router();
 
-// Set up AWS S3 client
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
+// Set up multer middleware to handle file uploads
+const upload = multer()
 
-// Set up multer middleware for handling file uploads
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5 MB
-  },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    if (!allowedTypes.includes(file.mimetype)) {
-      const error = new Error('Invalid file type');
-      error.code = 'LIMIT_FILE_TYPES';
-      return cb(error, false);
-    }
-    cb(null, true);
-  }
-});
-
-// Define route for file upload
-router.post('/', upload.single('file'), (req, res) => {
+// Create the upload route
+router.post('/', upload.single('file'), function (req, res, next) {
+  console.log(req.body.destination);
   const file = req.file;
+  if (!file) {
+    res.status(400).json({ message: "Missing file parameter for upload", help: "" });
+    return;
+  }
 
-  // Set up S3 upload parameters
-  const folder = req.body.folder || '';
-  console.log(folder);
-  const params = {
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: folder ? `${folder}/${file.originalname}` : file.originalname,
-    Body: file.buffer,
-    ACL: 'public-read'
-  };
-  // Upload file to S3 bucket
-  s3.putObject(params, (err, data) => {
-    if (err) {
-      console.error("problem uploading",err);
-      res.status(500).json({ error: err });
-    } else {
-      console.log('File uploaded successfully to S3 bucket');
-      const url = `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${params.Key}`;
-      res.send({ url });
-    }
-  });
+  // Use the ImageKit SDK to upload the file directly to ImageKit's servers
+  imagekit
+    .upload({
+      file: file.buffer, // Use the file buffer instead of the file object
+      fileName: file.originalname,
+      folder: req.body.destination || "uploads",
+    })
+    .then((result) => {
+      res.json({
+        success: true,
+        url: result.url,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Error uploading image to ImageKit");
+    });
 });
 
 module.exports = router;
