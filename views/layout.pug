@@ -3,5 +3,9 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    script(src='https://cdn.tailwindcss.com')
+  body.bg-gray-100
+    div.container.mx-auto.mt-20
+      block content

@@ -1,5 +1,90 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div.container.mx-auto.px-2.py-8
+    h1.text-2xl.text-gray-900.mb-4.font-bold Express
+    p.text-lg.text-gray-600.mb-4 Welcome to #{title}
+    p.text-lg.text-gray-600.mb-4 Welcome to the documentation for my API. Here you can find information about the available endpoints and how to use them.
+    div.mb-8
+      h2.text-xl.text-gray-900.mb-4.font-semibold Endpoints
+      div
+        div.bg-gray-200.p-3.rounded.mb-5.border-2.border-gray-300
+          h3.text-lg.text-gray-700.mb-2.font-semibold Users
+          ul.list-inside
+            li.mb-5
+              div.inline-block.rounded.bg-blue-200.p-1
+                code.mr-2 POST /users
+                div.bg-gray-100.rounded.p-2
+                  p Creates a new user
+                  code request payload 
+                    | {
+                    br
+                    | "username": "user2",
+                    br
+                    | "email": "user2@gmail.com",
+                    br
+                    | "password": "pass2",
+                    br
+                    | "avatar": "https://ik.imagekit.io/jagwpg3pn/images/avatars/testimonials-4_UeexyBAPa.jpg"
+                    br
+                    | }
+                    
+            li
+              div.inline-block.rounded.bg-blue-200.p-1
+                code.mr-2 POST /users/login
+                div.bg-gray-100.rounded.p-2
+                  p Logs in a user and returns user object along with token
+                  code request payload 
+                    | {
+                    br
+                    | "email": "user1@gmail.com",
+                    br
+                    | "password": "pass1"
+                    br
+                    | }
+        div.bg-gray-200.p-3.rounded.mb-5.border-2.border-gray-300
+          h3.text-lg.text-gray-700.mb-2.font-semibold Posts
+          ul.list-inside.mb-4
+            li.mb-5
+              div.inline-block.rounded.bg-green-200.p-1
+                code.mr-2 GET /posts/all
+                div.bg-gray-100.rounded.p-2
+                  p Returns all posts
+            li.mb-5
+              div.inline-block.rounded.bg-green-200.p-1
+                code.mr-2 GET /posts
+                div.bg-gray-100.rounded.p-2
+                  p Returns posts of logged in user
+            li.mb-5
+              div.inline-block.rounded.bg-blue-200.p-1
+                code.mr-2 POST /posts
+                div.bg-gray-100.rounded.p-2
+                  p Creates a new post
+                  code request payload 
+                    | {
+                    br
+                    |"title": "test",
+                    br
+                    |"body": "test",
+                    br
+                    |"postImg": "https://ik.imagekit.io/jagwpg3pn/images/posts/course-3_6lb4xWmd_.jpg"
+                    br
+                    | }
+            li.mb-5
+              div.inline-block.rounded.bg-red-200.p-1
+                code.mr-2 DELETE /posts/:id
+                div.bg-gray-100.rounded.p-2
+                  p Deletes a post
+        div.bg-gray-200.p-3.rounded.border-2.border-gray-300
+          h3.text-lg.text-gray-700.mb-2.font-semibold Upload
+          ul.list-inside.mb-4
+            li.mb-5
+              div.inline-block.rounded.bg-blue-200.p-1
+                code.mr-2 POST /upload
+                div.bg-gray-100.rounded.p-2
+                  p Uploads a file to imageKit and returns the url
+                  code form data
+                    br
+                    | destination: images/post
+                    br
+                    | file: (binary)
