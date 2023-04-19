@@ -9,7 +9,7 @@ const db = require("../models");
 // create new user
 router.post("/", encrypt, async (req, res, next) => {
 
-  const { username, email, password,avatar } = req.body;
+  const { username, email, password, avatar } = req.body;
   try {
     const existingUser = await db.User.findOne({ where: { email } });
     if (existingUser) {
@@ -21,13 +21,16 @@ router.post("/", encrypt, async (req, res, next) => {
       username: username,
       avatar: avatar,
     }); // Generate a JWT token and send it in the response
+    const user = result.toJSON();
+    delete user.password; // Remove password from user object
     const token = generateToken({ email: result.email, id: result.id });
-    res.status(201).json({ user: result, token: token });
+    res.status(201).json({ user, token });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "something went wrong" });
   }
 });
+
 
 // login a user
 router.post("/login", async (req, res, next) => {
@@ -41,7 +44,9 @@ router.post("/login", async (req, res, next) => {
       return res.status(401).json("Incorrect password");
     }
     const token = generateToken({ email: existingUser.email, id: existingUser.id });
-    res.status(201).json({ user: existingUser, token });
+    const user = existingUser.toJSON();
+    delete user.password; // Remove password from user object
+    res.status(201).json({ user, token });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Something went wrong" });
@@ -49,3 +54,4 @@ router.post("/login", async (req, res, next) => {
 });
 
 module.exports = router;
+
