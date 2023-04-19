@@ -1,25 +1,16 @@
-// env import
 require("dotenv").config();
 
-// imports
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const cors = require("cors");
+const fs = require("fs");
 
-// cors import
-var cors = require("cors");
+const app = express();
 
-// route imports
-const uploadRoute = require('./routes/upload');
-var index = require("./routes/index");
-var users = require("./routes/users");
-var posts = require("./routes/posts");
-
-var app = express();
-
-// cors options
+// Configure CORS options
 const corsOptions = {
   origin: "*",
   credentials: true,
@@ -33,11 +24,11 @@ const corsOptions = {
   ],
 };
 
-// view engine setup
+// Set up view engine
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
-// use cors for our app with options
+// Set up middleware
 app.use(cors(corsOptions));
 app.use(logger("dev"));
 app.use(express.json());
@@ -45,25 +36,25 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/public', express.static('./public'));
 
-// routes
-app.use("/", index);
+// Dynamically mount routes
+const routesDir = path.join(__dirname, "routes");
+fs.readdirSync(routesDir).forEach((file) => {
+  const routePath = path.join(routesDir, file);
+  const routeName = path.parse(file).name === "index" ? "" : path.parse(file).name;
+  app.use(`/${routeName}`, require(routePath));
+});
 
-// mounting routes
-app.use('/upload', uploadRoute);
-app.use("/users", users);
-app.use("/posts", posts);
-
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-  // render the error page
+  // Render the error page
   res.status(err.status || 500);
   res.render("error");
 });
