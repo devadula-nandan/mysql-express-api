@@ -12,7 +12,7 @@ const app = express();
 
 // Configure CORS options
 const corsOptions = {
-  origin: "https://react-app-beta-ten.vercel.app",
+  origin: "*",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [
