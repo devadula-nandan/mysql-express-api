@@ -9,6 +9,7 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: "mysql",
+    dialectModule: require('mysql2'),
     // logging: (msg) => {
     //   console.log(`\x1b[90m[Sequelize] ${msg}\x1b[0m`);
     // },
