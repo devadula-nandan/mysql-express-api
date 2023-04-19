@@ -6,6 +6,7 @@
             "use": "@vercel/node"
         }
     ],
+    "ignoredDependencies": ["uglify-js"],
     "routes": [
         {
             "src": "/(.*)",
