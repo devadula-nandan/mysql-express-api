@@ -9,7 +9,12 @@ const db = require("../models");
 router.get("/all", verifyToken, async (req, res, next) => {
   try {
     const posts = await db.Post.findAll({
-      include: db.User
+      include: [
+        {
+          model: db.User,
+          attributes: { exclude: ["password"] } 
+        }
+      ]
     });
     res.status(200).json(posts);
   } catch (err) {
@@ -17,6 +22,7 @@ router.get("/all", verifyToken, async (req, res, next) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 // get user posts
 router.get("/", verifyToken, async (req, res, next) => {
