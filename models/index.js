@@ -30,10 +30,15 @@ sequelize
 // multiple models
 const User = require("./user")(sequelize, Sequelize.DataTypes);
 const Post = require("./post")(sequelize, Sequelize.DataTypes);
+const Likes = require("./likes")(sequelize, Sequelize.DataTypes);
 
 // associations / relations
 Post.belongsTo(User);
 User.hasMany(Post);
+Post.hasMany(Likes);
+Likes.belongsTo(Post);
+Likes.belongsTo(User);
+User.hasMany(Likes);
 
 // sync database
 sequelize
@@ -46,4 +51,4 @@ sequelize
   });
 
 // exports
-module.exports = { User, Post, sequelize };
+module.exports = { User, Post,Likes, sequelize };
