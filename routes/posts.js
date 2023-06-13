@@ -20,7 +20,7 @@ router.get("/all", verifyToken, async (req, res, next) => {
           include: [
             {
               model: db.User,
-              attributes: ["username", "id","avatar"]
+              attributes: ["username", "id", "avatar"]
             }
           ]
         }
@@ -58,7 +58,7 @@ router.post("/", verifyToken, async (req, res, next) => {
       title,
       body,
       postImg,
-      UserId: id,
+      userId: id,
     });
     res.status(201).json(post);
   } catch (err) {
@@ -80,9 +80,9 @@ router.delete("/:id", verifyToken, async (req, res, next) => {
   }
 })
 // like/unlike a post
-router.put("/like/:id", verifyToken, async (req, res, next) => {
+router.put("/like", verifyToken, async (req, res, next) => {
   const { id: userId } = req.user;
-  const { id: postId } = req.params;
+  const { id: postId } = req.query;
 
   try {
     // Find the user and post based on their IDs
@@ -105,13 +105,49 @@ router.put("/like/:id", verifyToken, async (req, res, next) => {
       UserId: userId,
       PostId: postId
     });
-    
+
     res.status(200).send("Post liked successfully");
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
   }
 });
+
+// add a comment
+router.post("/comment", verifyToken, async (req, res, next) => {
+  const { userId: userId } = req.user;
+  const { postId: postId } = req.params;
+  const { parentId: parentId } = req.params;
+  const { body } = req.body;
+  console.log(userId, postId, parentId, body);
+  // if (postId) {
+  //   const user = await db.User.findByPk(userId);
+  //   const post = await db.Post.findByPk(postId);
+  //   if (!user || !post) {
+  //     return res.status(404).send("User or post not found");
+  //   }
+  //   await db.Comments.create({
+  //     PostId: postId,
+  //     UserId: userId,
+  //     nexusId: null,
+  //     body,
+  //   });
+  //   return res.status(200).send("Comment added successfully");
+  // } 
+  // if(parentId) {
+  //   const reply = await db.Comments.create({
+  //     PostId: null,
+  //     UserId: userId,
+  //     nexusId: null,
+  //     body,
+  //   })
+  //   await db.Comments.update({nexusId: reply.id } , {
+  //     where: { id: parentId }
+  //   })
+  //   return res.status(200).send("reply added successfully");
+  // }
+}
+)
 
 
 

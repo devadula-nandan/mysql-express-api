@@ -1,7 +1,7 @@
-// imports
-const { Sequelize } = require("sequelize");
+// models/index.js
+const { Sequelize, DataTypes } = require("sequelize");
 
-// db connection
+// Database connection
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -9,46 +9,75 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: "mysql",
-    dialectModule: require('mysql2'),
-    // logging: (msg) => {
-    //   console.log(`\x1b[90m[Sequelize] ${msg}\x1b[0m`);
-    // },
+    dialectModule: require("mysql2"),
     logging: false,
   }
 );
 
-// initialize sequelize db connection
+// Initialize Sequelize DB connection
 sequelize
   .authenticate()
   .then(() => {
-    console.log("\x1b[32mdb connected successfully \x1b[0m");
+    console.log("\x1b[32mDB connected successfully\x1b[0m");
   })
   .catch((err) => {
-    console.log("\x1b[31merror connecting db \x1b[0m", err);
+    console.log("\x1b[31mError connecting to DB\x1b[0m", err);
   });
 
-// multiple models
-const User = require("./user")(sequelize, Sequelize.DataTypes);
-const Post = require("./post")(sequelize, Sequelize.DataTypes);
-const Likes = require("./likes")(sequelize, Sequelize.DataTypes);
+// Models
+const User = require("./user")(sequelize, DataTypes);
+const Post = require("./post")(sequelize, DataTypes);
+const Likes = require("./likes")(sequelize, DataTypes);
+const Friends = require("./friends")(sequelize, DataTypes);
+const Comment = require("./comments")(sequelize, DataTypes);
+const CommentLike = require("./commentLikes")(sequelize, DataTypes);
 
-// associations / relations
-Post.belongsTo(User);
-User.hasMany(Post);
-Post.hasMany(Likes);
-Likes.belongsTo(Post);
-Likes.belongsTo(User);
-User.hasMany(Likes);
+// Associations/Relations
+User.hasMany(Post, { foreignKey: "userId", onDelete: "CASCADE" });
+Post.belongsTo(User, { foreignKey: "userId" });
 
-// sync database
+User.hasMany(Likes, { foreignKey: "userId", onDelete: "CASCADE" });
+Likes.belongsTo(User, { foreignKey: "userId" });
+
+Post.hasMany(Likes, { foreignKey: "postId", onDelete: "CASCADE" });
+Likes.belongsTo(Post, { foreignKey: "postId" });
+
+User.hasMany(Friends);
+Friends.belongsTo(User, { foreignKey: "UserId", as: "User" });
+Friends.belongsTo(User, { foreignKey: "FriendId", as: "Friend" });
+
+User.hasMany(Comment, { foreignKey: "userId", onDelete: "CASCADE" });
+Comment.belongsTo(User, { foreignKey: "userId" });
+
+Post.hasMany(Comment, { foreignKey: "postId", onDelete: "CASCADE" });
+Comment.belongsTo(Post, { foreignKey: "postId" });
+
+Comment.hasMany(Comment, { foreignKey: "parentId", as: "replies", onDelete: "CASCADE" });
+Comment.belongsTo(Comment, { foreignKey: "parentId", as: "parent" });
+
+User.hasMany(CommentLike, { foreignKey: "userId", onDelete: "CASCADE" });
+CommentLike.belongsTo(User, { foreignKey: "userId" });
+
+Comment.hasMany(CommentLike, { foreignKey: "commentId", onDelete: "CASCADE" });
+CommentLike.belongsTo(Comment, { foreignKey: "commentId" });
+
+// Sync database
 sequelize
   .sync()
   .then(() => {
-    console.log("\x1b[32mdb synced successfully \x1b[0m");
+    console.log("\x1b[32mDB synced successfully\x1b[0m");
   })
   .catch((err) => {
-    console.log("\x1b[31merror syncing db \x1b[0m", err);
+    console.log("\x1b[31mError syncing DB\x1b[0m", err);
   });
 
-// exports
-module.exports = { User, Post,Likes, sequelize };
+// Exports
+module.exports = {
+  User,
+  Post,
+  Likes,
+  Friends,
+  Comment,
+  CommentLike,
+  sequelize,
+};

@@ -1,0 +1,22 @@
+module.exports = function (sequelize, DataTypes) {
+    const Comments = sequelize.define("Comments", {
+        id: {
+            type: DataTypes.UUID,
+            primaryKey: true,
+            defaultValue: DataTypes.UUIDV4,
+        },
+        UserId: {
+            type: DataTypes.UUID,
+            references: {
+                model: "Users",
+                key: "id"
+            }
+        },
+        body: DataTypes.TEXT,
+        nexusId: {
+            type: DataTypes.UUID,
+            defaultValue: null,
+        }
+    });
+    return Comments;
+};
