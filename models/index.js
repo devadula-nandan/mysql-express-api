@@ -31,6 +31,7 @@ const Likes = require("./likes")(sequelize, DataTypes);
 const Friends = require("./friends")(sequelize, DataTypes);
 const Comment = require("./comments")(sequelize, DataTypes);
 const CommentLike = require("./commentLikes")(sequelize, DataTypes);
+const Counter = require("./counter")(sequelize, DataTypes);
 
 // Associations/Relations
 User.hasMany(Post, { foreignKey: "userId", onDelete: "CASCADE" });
@@ -79,5 +80,6 @@ module.exports = {
   Friends,
   Comment,
   CommentLike,
+  Counter,
   sequelize,
 };
